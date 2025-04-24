@@ -10,7 +10,7 @@ use App\Livewire\Dashboard;
 use App\Livewire\Student\YearbookProfileForm;
 use App\Livewire\Admin\ManageSubscriptions;
 use App\Livewire\Superadmin\ManageRoleNames;
-use App\Livewire\Superadmin\ManageStaff;
+use App\Livewire\Superadmin\ManageUsers;
 use App\Livewire\Auth\RegisterAdmin;
 use App\Livewire\Admin\ViewSubscriptionDetails;
 use App\Livewire\Student\ManagePhotos;
@@ -91,7 +91,7 @@ Route::middleware('auth')->group(function () {
     // -- Routes accessible ONLY by SUPERADMINS --
     Route::middleware('role:superadmin')->group(function () {
         Route::get('/superadmin/role-names', ManageRoleNames::class)->name('superadmin.roles.index');
-        Route::get('/superadmin/staff', ManageStaff::class)->name('superadmin.staff.index');
+        Route::get('/superadmin/users', ManageUsers::class)->name('superadmin.users.index');
     });
 
     // REMOVED Admin registration route from here

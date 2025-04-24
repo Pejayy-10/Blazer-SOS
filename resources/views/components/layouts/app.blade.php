@@ -112,14 +112,15 @@
 
                     {{-- Superadmin Only Section - Check ACTUAL user role --}}
                     @if(Auth::user()->role === 'superadmin')
-                         <span class="px-3 pt-4 pb-1 block text-xs font-semibold text-white/50 uppercase tracking-wider">System Config</span>
-                         {{-- Staff Management --}}
-                         <a href="{{ route('superadmin.staff.index') }}" wire:navigate
-                            class="flex items-center px-3 py-2 rounded-md text-sm font-medium hover:bg-[#9A382F]/70 transition-colors duration-150 group {{ request()->routeIs('superadmin.staff.index') ? 'bg-[#9A382F]' : '' }}">
-                            {{-- Heroicon: users --}}
-                            <svg class="h-5 w-5 mr-3 text-white/80 group-hover:text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015.5-4.96A5 5 0 0111 16v1H1v-1a5 5 0 015-5z" /></svg>
-                            Staff Management
-                         </a>
+                    <span class="px-3 pt-4 pb-1 block text-xs font-semibold text-white/50 uppercase tracking-wider">System Config</span>
+                          {{-- User Management --}}
+                         <a href="{{ route('superadmin.users.index') }}" wire:navigate
+                         {{-- Make sure classes match other sidebar links exactly --}}
+                         class="flex items-center px-3 py-2 rounded-md text-sm font-medium hover:bg-[#9A382F]/70 transition-colors duration-150 group {{ request()->routeIs('superadmin.users.index') ? 'bg-[#9A382F]' : '' }}">
+                         {{-- Add the Heroicon: users SVG --}}
+                         <svg class="h-5 w-5 mr-3 text-white/80 group-hover:text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015.5-4.96A5 5 0 0111 16v1H1v-1a5 5 0 015-5z" /></svg>
+                         User Management {{-- Text should now match font style --}}
+                        </a>
                          <a href="{{ route('superadmin.roles.index') }}" wire:navigate
                             class="flex items-center px-3 py-2 rounded-md text-sm font-medium hover:bg-[#9A382F]/70 transition-colors duration-150 group {{ request()->routeIs('superadmin.roles.index') ? 'bg-[#9A382F]' : '' }}">
                             {{-- Heroicon: tag --}}

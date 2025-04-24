@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule; // For checking enum-like values if needed
 use Livewire\Attributes\Layout;
+use Carbon\Carbon; // For date handling
 use Livewire\Attributes\Rule as LivewireRule; // Use alias to avoid conflict with Validation Rule
 use Livewire\Attributes\Title;
 use Livewire\Component;
