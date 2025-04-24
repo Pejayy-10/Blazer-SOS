@@ -227,8 +227,14 @@
                                  style="display: none;"> <!-- style="display: none;" is important for Alpine initial state -->
 
                                 {{-- Dropdown Links --}}
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Account</a>
+                                <a href="{{ route('user.profile') }}" wire:navigate {{-- Update route --}}
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                Profile
+                                </a>
+                                <a href="{{ route('user.account.settings') }}" wire:navigate {{-- Update route and add wire:navigate --}}
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Account
+                                </a>
                                 <hr class="border-gray-200 my-1">
 
                                  {{-- *** USE STANDARD LOGOUT ROUTE *** --}}

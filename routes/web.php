@@ -20,6 +20,8 @@ use App\Livewire\Admin\PlatformSetup;
 use App\Livewire\Student\SubscriptionStatus;
 use App\Livewire\Admin\YearbookRepository;
 use App\Livewire\Admin\ManageYearbookPlatforms;
+use App\Livewire\UserProfile\UpdateAccountInformation;
+use App\Livewire\UserProfile\UpdateProfileInformation;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +50,12 @@ Route::middleware('auth')->group(function () {
 
     // -- Routes accessible by ANY authenticated user --
     Route::get('/app', Dashboard::class)->name('app.dashboard');
+
+    // Account Settings Route (NEW)
+    Route::get('/user/account', UpdateAccountInformation::class)->name('user.account.settings');
+
+    // Profile Settings Route (NEW)
+    Route::get('/user/profile', UpdateProfileInformation::class)->name('user.profile');
 
     // Standard Laravel Logout Route (POST request)
     Route::post('/logout', function () {

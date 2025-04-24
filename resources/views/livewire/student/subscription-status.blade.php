@@ -121,28 +121,66 @@
 
              {{-- Next Steps / Instructions Section --}}
             <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                 <h3 class="text-base font-medium text-gray-900 dark:text-gray-100">Next Steps</h3>
-                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ $nextStepMessage }}</p>
+                <h3 class="text-base font-medium text-gray-900 dark:text-gray-100">Next Steps:</h3>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ $nextStepMessage }}</p>
 
-                 {{-- Link to Profile Form --}}
-                 @if(!$hasSubmittedProfile && $paymentStatus !== 'paid')
-                      <div class="mt-4">
-                         <a href="{{ route('student.profile.edit') }}" wire:navigate class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                             Go to Yearbook Profile Form
-                         </a>
+                {{-- Link to Profile Form (if needed) --}}
+                @if(!$hasSubmittedProfile && $paymentStatus !== 'paid')
+                     <div class="mt-4">
+                        <a href="{{ route('student.profile.edit') }}" wire:navigate class="inline-flex items-center px-4 py-2 ..."> {{-- Button styles --}}
+                            Go to Yearbook Profile Form
+                        </a>
+                    </div>
+                @endif
+
+                {{-- === UPDATED PAYMENT INSTRUCTIONS === --}}
+                {{-- Show payment options only when payment is pending AND profile is submitted --}}
+                @if($paymentStatus === 'pending' && $hasSubmittedProfile)
+                     <div class="mt-4 space-y-4"> {{-- Use space-y for separation --}}
+                         <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Payment Options:</p>
+
+                         {{-- Option 1: Over-the-Counter --}}
+                         <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md border border-gray-200 dark:border-gray-600">
+                            <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">1. Over-the-Counter Payment:</p>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                               Please visit the <strong class="font-semibold">[Specify Office Name/Location, e.g., School Publication Office]</strong> during office hours <strong class="font-semibold">([Specify Hours, e.g., 9 AM - 4 PM, Mon-Fri])</strong> to make your payment directly.
+                            </p>
+                         </div>
+
+                          {{-- Option 2: Bank Transfer --}}
+                          <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md border border-gray-200 dark:border-gray-600">
+                              <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">2. Bank Transfer / Online Payment:</p>
+                              <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                  You can transfer the payment to the following account:
+                              </p>
+                              <ul class="mt-1 list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1 pl-2">
+                                   <li><strong>Bank Name:</strong> [Specify Bank Name, e.g., BDO Unibank]</li>
+                                   <li><strong>Account Name:</strong> [Specify Exact Account Name]</li>
+                                   <li><strong>Account Number:</strong> [Specify Account Number]</li>
+                                   <li><strong>Amount Due:</strong>
+                                       @if($profile?->subscription_type === 'full_package') ₱2,300
+                                       @elseif($profile?->subscription_type === 'inclusions_only') ₱1,500
+                                       @else [Please contact office for amount]
+                                       @endif
+                                   </li>
+                              </ul>
+                              <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                  <strong class="font-semibold text-red-600 dark:text-red-400">Important:</strong> After transferring, please send a clear screenshot or photo of your proof of payment (transaction receipt) to the <strong class="font-semibold">[Specify Messenger Page/Contact Name, e.g., Official Blazer SOS FB Page Messenger]</strong>. Include your Full Name and Student ID Number in the message.
+                              </p>
+                          </div>
+
+                         {{-- Confirmation Note --}}
+                         <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md border border-gray-200 dark:border-gray-600">
+                              <p class="text-sm text-gray-600 dark:text-gray-400">
+                                  For both methods, your subscription status will be updated to "Paid / Confirmed" by an administrator once your payment has been verified. Please allow [Specify Timeframe, e.g., 1-2 working days] for verification after submitting proof via Messenger.
+                              </p>
+                         </div>
                      </div>
-                 @endif
+                @endif
+                {{-- === END UPDATED PAYMENT INSTRUCTIONS === --}}
 
-                 {{-- Payment Instructions --}}
-                 @if($paymentStatus === 'pending' && $hasSubmittedProfile)
-                      <div class="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600">
-                         <p class="text-sm text-gray-700 dark:text-gray-300">
-                            Please visit the [Specify Office Name/Location, e.g., School Publication Office] during office hours ([Specify Hours, e.g., 9 AM - 4 PM, Mon-Fri]) to make your payment. Your status will be updated by an administrator once verified.
-                         </p>
-                      </div>
-                 @endif
-            </div>
+           </div>
 
-        </div> {{-- End Main Content Area --}}
+       </div> {{-- End Main Content Area --}}
     </div>
 </div>
