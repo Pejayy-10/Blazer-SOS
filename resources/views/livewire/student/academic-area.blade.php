@@ -18,6 +18,13 @@
             My Academic Information
         </h2>
 
+        {{-- Add Reminder if fields are empty on load --}}
+        @if(!$selectedCollegeId || !$selectedCourseId || !$year_and_section)
+        <div class="mb-4 mt-2 p-3 text-sm text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800" role="alert">
+            <span class="font-medium">Reminder:</span> Please select your College, Course, and enter your Year & Section below.
+        </div>
+        @endif
+
         {{-- Edit Restriction Message --}}
         @if (!$canEdit)
              <div class="mb-4 p-4 text-sm text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800" role="alert">

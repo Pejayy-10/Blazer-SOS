@@ -37,6 +37,12 @@
                            {{ $activeTab === 'registered' ? 'border-[#9A382F] text-[#9A382F] dark:text-red-400 dark:border-red-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600' }}">
                 Registered & Paid
             </button>
+            {{-- Missing Academic Info Tab (NEW) --}}
+             <button wire:click="setTab('missing_academic')"
+             class="py-3 px-1 border-b-2 text-sm font-medium transition-colors duration-150
+                    {{ $activeTab === 'missing_academic' ? 'border-[#9A382F] text-[#9A382F] dark:text-red-400 dark:border-red-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600' }}">
+                Missing Academic Info
+            </button>
              {{-- <button wire:click="setTab('no_writeup')" ... > Paid (No Write-up) -- DISABLED FOR NOW -- </button> --}}
             <button wire:click="setTab('deleted')"
                     class="py-3 px-1 border-b-2 text-sm font-medium transition-colors duration-150
@@ -73,6 +79,15 @@
                             <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                 {{ $profile->college?->abbreviation ?? $profile->college?->name ?? 'N/A' }} <br class="sm:hidden">
                                 <span class="text-xs text-gray-400 dark:text-gray-500">{{ $profile->course?->abbreviation ?? $profile->course?->name ?? 'N/A' }}</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                                @if($profile->subscription_type === 'full_package')
+                                    Full Package
+                                @elseif($profile->subscription_type === 'inclusions_only')
+                                    Inclusions Only
+                                @else
+                                     {{ $profile->subscription_type ?? 'N/A' }}
+                                @endif
                             </td>
                              {{-- Platform/Year --}}
                             <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">

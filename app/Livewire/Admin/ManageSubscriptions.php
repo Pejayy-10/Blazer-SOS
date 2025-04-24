@@ -97,19 +97,31 @@ class ManageSubscriptions extends Component
         // Apply filtering based on the active tab
         switch ($this->activeTab) {
             case 'pending':
-                $query->where('profile_submitted', true)
+                $query->where('profile_submitted', true) // Assuming profile must be submitted first
                       ->where('payment_status', 'pending')
-                      ->whereNull('deleted_at'); // Ensure not soft-deleted
+                      ->whereNotNull('college_id') // Added: Ensure academic info IS present for pending payment
+                      ->whereNotNull('course_id')
+                      ->whereNull('deleted_at');
                 break;
             case 'registered':
                  $query->where('profile_submitted', true)
                        ->where('payment_status', 'paid') // Or other paid statuses if applicable
                        ->whereNull('deleted_at');
                  break;
+            case 'missing_academic': // <-- New Tab Logic
+                  $query->where('profile_submitted', true) // Profile details submitted
+                        ->where(function ($q) {
+                            $q->whereNull('college_id') // But College OR Course is missing
+                              ->orWhereNull('course_id');
+                        })
+                        ->whereNull('deleted_at'); // Not deleted
+                  break;
             case 'deleted':
-                $query->onlyTrashed()->with(['user', 'college', 'course']); // Eager load for trashed too
-                 break;
-    }
+                    $query->onlyTrashed();
+                    break;
+                default: // Default case if tab name is invalid
+                    $query->whereRaw('1 = 0'); // Return no results
+           }
 
         // Apply search filter
         if (!empty($this->search)) {

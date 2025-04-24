@@ -134,8 +134,18 @@
                     </dd>
                  </div>
                  <div class="py-3 sm:py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Subscription Type</dt>
-                    <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 sm:mt-0 sm:col-span-2">{{ $profile->subscription_type ?? 'N/A' }}</dd>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Selected Package</dt> {{-- Renamed Label --}}
+                    <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 sm:mt-0 sm:col-span-2">
+                        @if($profile->subscription_type === 'full_package')
+                            Full Package (₱2,300)
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Includes profile spot in dividers & physical yearbook copy.</p>
+                        @elseif($profile->subscription_type === 'inclusions_only')
+                            Inclusions Only (₱1,500)
+                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Includes profile spot in dividers (No physical copy).</p>
+                        @else
+                             {{ $profile->subscription_type ?? 'N/A' }}
+                        @endif
+                    </dd>
                 </div>
                  <div class="py-3 sm:py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                     <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Jacket Size</dt>
