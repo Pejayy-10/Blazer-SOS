@@ -1,0 +1,22 @@
+# docker-compose.yml
+
+services:
+  # --- Mailpit Service ---
+  # This defines the Mailpit container
+  mailpit:
+    image: 'axllent/mailpit:latest' # Use the official Mailpit image from Docker Hub
+    container_name: blazer_sos_mailpit # Optional: Give the container a specific name
+    restart: unless-stopped # Automatically restart Mailpit if it stops unexpectedly (but not on manual stop)
+    ports:
+      # Map ports from your computer (HOST) to the container (CONTAINER)
+      # HOST:CONTAINER
+      - "1025:1025"  # SMTP Port: Laravel sends email TO this port inside the container
+      - "8025:8025"  # Web UI Port: You access Mailpit's dashboard VIA this port on your computer
+    networks:
+      - blazersos_network # Connect to our custom network
+
+# --- Define Networks ---
+# Creates a private network for our containers to talk to each other
+networks:
+  blazersos_network:
+    driver: bridge # Standard Docker network type
