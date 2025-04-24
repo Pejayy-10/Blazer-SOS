@@ -38,6 +38,7 @@ class YearbookProfile extends Model
         'profile_submitted',
         'submitted_at',
         'paid_at',
+        'payment_confirmed_by',
     ];
 
     protected $casts = [
@@ -77,6 +78,15 @@ class YearbookProfile extends Model
     {
         return $this->belongsTo(YearbookPlatform::class);
     }   
+
+    /**
+     * Get the user (Admin) who confirmed the payment.
+     */
+    public function paymentConfirmer(): BelongsTo // <-- ADD THIS RELATIONSHIP
+    {
+        // Using 'payment_confirmed_by' as the foreign key linking to the User model
+        return $this->belongsTo(User::class, 'payment_confirmed_by');
+    }
 
     /** Accessor for public photo URL */
     public function getUrlAttribute(): string

@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\YearbookProfile;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -41,7 +42,7 @@ class ManageSubscriptions extends Component
     }
 
     /**
-     * Mark a student's profile as paid.
+     * Mark a student's profile as paid and record the admin.
      */
     public function confirmPayment(int $profileId)
     {
@@ -50,8 +51,9 @@ class ManageSubscriptions extends Component
             $profile->update([
                 'payment_status' => 'paid',
                 'paid_at' => now(),
+                'payment_confirmed_by' => Auth::id(), // <-- STORE CURRENT ADMIN ID
             ]);
-            session()->flash('message', 'Payment confirmed successfully for ' . $profile->user->username);
+            session()->flash('message', 'Payment confirmed successfully for ' . $profile->user?->username ?? 'user');
         } else {
             session()->flash('error', 'Could not confirm payment. Profile not found or already paid.');
         }
@@ -89,7 +91,7 @@ class ManageSubscriptions extends Component
     {
         $query = YearbookProfile::query()
             // *** EAGER LOAD RELATIONSHIPS HERE ***
-            ->with(['user', 'college', 'course']) // Load user, college, and course data efficiently
+            ->with(['user', 'college', 'course', 'yearbookPlatform', 'paymentConfirmer']) // Load user, college, and course data efficiently
             ->orderBy('created_at', 'desc');
 
         // Apply filtering based on the active tab

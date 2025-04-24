@@ -93,6 +93,29 @@
         @endif
     </div>
 
+    {{-- QR Code Section (NEW) --}}
+    <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Student Registration QR Code</h3>
+        <div class="mt-3 flex items-center space-x-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow max-w-xs">
+             {{-- Display the SVG QR Code --}}
+             <div class="flex-shrink-0">
+                {!! $qrCodeSvg !!} {{-- Use {!! !!} to output raw SVG --}}
+             </div>
+             <div class="flex-grow">
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    Scan this QR code with a mobile device to go directly to the student registration page.
+                </p>
+                <p class="mt-2 text-xs text-gray-500 dark:text-gray-500 truncate">
+                    URL: <a href="{{ route('register') }}" target="_blank" class="hover:underline">{{ route('register') }}</a>
+                </p>
+             </div>
+        </div>
+         <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+             Admins can promote this QR code around the school. Note: The registration page's availability might depend on the status of the *active* Yearbook Platform.
+         </p>
+     </div>
+     {{-- End QR Code Section --}}
+
      {{-- Add/Edit Platform Modal --}}
      <div x-show="showModal"
           class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title-platform" role="dialog" aria-modal="true"

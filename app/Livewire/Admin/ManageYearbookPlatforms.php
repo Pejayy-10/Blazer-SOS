@@ -9,6 +9,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Log; // For logging errors
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 #[Layout('components.layouts.app')]
 #[Title('Manage Yearbook Platforms')]
@@ -168,9 +169,16 @@ class ManageYearbookPlatforms extends Component
             'archived' => 'Archived',
         ];
 
+        // --- Generate QR Code ---
+        $registrationUrl = route('register'); // Get URL for the student registration page
+        // Generate SVG QR code string. Size 150px, margin 1 unit.
+        $qrCodeSvg = QrCode::size(150)->margin(1)->generate($registrationUrl);
+        // --- End QR Code Generation ---
+
         return view('livewire.admin.manage-yearbook-platforms', [
             'platforms' => $platforms,
             'statusOptions' => $statusOptions, // Pass options to the view
+            'qrCodeSvg' => $qrCodeSvg,
         ]);
     }
 }
