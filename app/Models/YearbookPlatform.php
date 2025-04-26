@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class YearbookPlatform extends Model
 {
@@ -13,6 +14,8 @@ class YearbookPlatform extends Model
     protected $fillable = [
         'year',
         'name',
+        'theme_title',            
+        'background_image_path',
         'status',
         'is_active',
     ];
@@ -39,20 +42,36 @@ class YearbookPlatform extends Model
     }
 
      /**
+     * Accessor for the public background image URL.
+     */
+    public function getBackgroundImageUrlAttribute(): ?string
+    {
+        return $this->background_image_path
+                   ? Storage::disk('public')->url($this->background_image_path)
+                   : null; // Return null if no image path
+    }
+
+     /**
       * Ensure only one platform can be active at a time.
       */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($platform) {
-            // If this platform is being marked as active,
-            // find any OTHER platform that is currently active and deactivate it.
-            if ($platform->is_active) {
-                static::where('id', '!=', $platform->id)
-                      ->where('is_active', true)
-                      ->update(['is_active' => false]);
-            }
-        });
-    }
-}
+      protected static function boot()
+      {
+          parent::boot();
+  
+          // Handle setting only one platform active
+          static::saving(function ($platform) {
+              if ($platform->is_active && $platform->isDirty('is_active')) { // Check if is_active changed to true
+                  static::where('id', '!=', $platform->id)
+                        ->where('is_active', true)
+                        ->update(['is_active' => false]);
+              }
+          });
+  
+           // Delete associated image file when platform is deleted
+          static::deleting(function ($platform) {
+               if ($platform->background_image_path && Storage::disk('public')->exists($platform->background_image_path)) {
+                   Storage::disk('public')->delete($platform->background_image_path);
+               }
+           });
+      }
+  }

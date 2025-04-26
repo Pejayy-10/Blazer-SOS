@@ -222,8 +222,93 @@
     </div> {{-- End Conditional Content Area --}}
 
 
-    {{-- Invite Staff Modal (Keep as is) --}}
-    <div x-show="showInviteModal" x-trap.noscroll="showInviteModal" class="..." style="display: none;" x-transition...> ... </div>
+        {{--#################################### --}}
+    {{--# Invite Staff Modal                 #--}}
+    {{--#################################### --}}
+    <div x-data="{ show: $wire.entangle('showInviteModal').live }" {{-- Link Alpine 'show' to Livewire property --}}
+         x-show="show"
+         x-on:keydown.escape.window="show = false" {{-- Close modal on Escape key --}}
+         class="fixed inset-0 z-50 overflow-y-auto"
+         aria-labelledby="modal-title-invite" role="dialog" aria-modal="true"
+         style="display: none;" {{-- Hide initially --}}
+         x-transition:enter="ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+
+        {{-- Modal Overlay --}}
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity dark:bg-opacity-80" @click="show = false"></div> {{-- Close modal on overlay click --}}
+
+        {{-- Modal Panel --}}
+        <div class="flex items-center justify-center min-h-screen p-4 text-center">
+            <div @click.stop {{-- Prevent closing modal when clicking inside panel --}}
+                 class="relative inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+                 x-show="show"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+
+                {{-- Modal Form --}}
+                <form wire:submit.prevent="sendInvitation">
+                    <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start w-full">
+                            {{-- Icon --}}
+                             <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 dark:bg-indigo-900 sm:mx-0 sm:h-10 sm:w-10">
+                                {{-- Heroicon: mail --}}
+                                <svg class="h-6 w-6 text-indigo-600 dark:text-indigo-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>
+                            </div>
+                            {{-- Form Content --}}
+                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-title-invite">
+                                    Invite New Staff Member
+                                </h3>
+                                <div class="mt-4 space-y-4">
+                                    {{-- Email Input --}}
+                                    <div>
+                                        <label for="inviteEmail" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Staff Email Address *</label>
+                                        <input type="email" id="inviteEmail" wire:model.lazy="inviteEmail" required autofocus
+                                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"
+                                               placeholder="staffmember@example.com">
+                                        @error('inviteEmail') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                                    </div>
+                                     {{-- Role Name Dropdown --}}
+                                     <div>
+                                        <label for="inviteRoleName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Assign Role Name *</label>
+                                        <select id="inviteRoleName" wire:model="inviteRoleName" required
+                                                class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm">
+                                            <option value="" disabled>-- Select Role --</option>
+                                            @foreach($roleNames as $roleName)
+                                                <option value="{{ $roleName }}">{{ $roleName }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('inviteRoleName') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- Modal Footer/Actions --}}
+                    <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button type="submit"
+                                wire:loading.attr="disabled" wire:target="sendInvitation"
+                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#9A382F] text-base font-medium text-white hover:bg-[#5F0104] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#9A382F] dark:focus:ring-offset-gray-800 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+                            <span wire:loading.remove wire:target="sendInvitation">Send Invitation</span>
+                             <span wire:loading wire:target="sendInvitation">Sending...</span>
+                        </button>
+                        <button type="button" @click="show = false" wire:loading.attr="disabled" wire:target="sendInvitation" {{-- Also disable cancel during send --}}
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-500">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div> {{-- End Invite Staff Modal --}}
 
     {{-- Edit User Modal (NEW - Apply full styling) --}}
     <div x-show="showEditUserModal" x-trap.noscroll="showEditUserModal"

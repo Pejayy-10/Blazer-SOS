@@ -2,37 +2,43 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\YearbookPlatform; // Use the new model
+use App\Models\YearbookPlatform;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Rule;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Log; // For logging errors
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Livewire\WithFileUploads; // <-- Add File Upload Trait
+use Illuminate\Support\Facades\Auth; // Need Auth for permission check potentially
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage; // <-- Import Storage
 
 #[Layout('components.layouts.app')]
 #[Title('Manage Yearbook Platforms')]
 class ManageYearbookPlatforms extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads; // <-- Use File Upload Trait
 
     // Modal & Form State
     public bool $showPlatformModal = false;
     public ?int $editingPlatformId = null;
 
     // Form Fields
-    #[Rule('required|integer|digits:4|min:2000')] // Base year validation
-    public string $platformYear = ''; // Input type="number" but Livewire binds as string initially
-
+    #[Rule('required|integer|digits:4|min:2000')]
+    public string $platformYear = '';
     #[Rule('required|string|max:255')]
-    public string $platformName = ''; // e.g., AY 2024-2025 Yearbook
-
-    #[Rule('required|string|in:setup,open,closed,printing,archived')] // Valid statuses
+    public string $platformName = '';
+    #[Rule('nullable|string|max:255')]
+    public string $platformThemeTitle = ''; // Optional theme title
+    #[Rule('required|string|in:setup,open,closed,printing,archived')]
     public string $platformStatus = 'setup';
-
     #[Rule('boolean')]
-    public bool $platformIsActive = false; // Allow setting active status
+    public bool $platformIsActive = false;
+
+    // Image Upload Property
+    #[Rule('nullable|image|max:5120')] // Optional image, max 5MB
+    public $platformImageUpload; // Temp file object
+    public ?string $existingImageUrl = null; // Store existing image URL for display in modal
 
     /**
      * Open the modal for adding or editing.
@@ -40,11 +46,14 @@ class ManageYearbookPlatforms extends Component
     public function openPlatformModal(?YearbookPlatform $platform = null)
     {
         $this->resetErrorBag();
+        $this->reset('platformImageUpload'); // Reset file input
         $this->editingPlatformId = $platform?->id;
         $this->platformYear = $platform?->year ?? '';
         $this->platformName = $platform?->name ?? '';
+        $this->platformThemeTitle = $platform?->theme_title ?? ''; // Load theme
         $this->platformStatus = $platform?->status ?? 'setup';
         $this->platformIsActive = $platform?->is_active ?? false;
+        $this->existingImageUrl = $platform?->backgroundImageUrl; // Load image URL via accessor
         $this->showPlatformModal = true;
     }
 
@@ -54,7 +63,7 @@ class ManageYearbookPlatforms extends Component
     public function closePlatformModal()
     {
         $this->showPlatformModal = false;
-        $this->reset(['editingPlatformId', 'platformYear', 'platformName', 'platformStatus', 'platformIsActive']);
+        $this->reset(['editingPlatformId', 'platformYear', 'platformName', 'platformThemeTitle', 'platformStatus', 'platformIsActive', 'platformImageUpload', 'existingImageUrl']);
         $this->resetErrorBag();
     }
 
@@ -67,45 +76,66 @@ class ManageYearbookPlatforms extends Component
         $rules = [
             'platformYear' => ['required', 'integer', 'digits:4', 'min:2000'],
             'platformName' => ['required', 'string', 'max:255'],
+            'platformThemeTitle' => ['nullable', 'string', 'max:255'],
             'platformStatus' => ['required', 'string', 'in:setup,open,closed,printing,archived'],
             'platformIsActive' => ['boolean'],
+            'platformImageUpload' => ['nullable', 'image', 'max:5120'], // Validate image
         ];
 
-        // Add unique validation rule for year, ignoring the current record if editing
+        // Add unique validation rule for year, ignoring self if editing
         $rules['platformYear'][] = $this->editingPlatformId
-            ? 'unique:yearbook_platforms,year,' . $this->editingPlatformId // Rule for editing
-            : 'unique:yearbook_platforms,year'; // Rule for creating
+            ? 'unique:yearbook_platforms,year,' . $this->editingPlatformId
+            : 'unique:yearbook_platforms,year';
 
-        // Define custom attribute names for user-friendly validation messages
+        // Define custom attribute names
         $validationAttributes = [
             'platformYear' => 'year',
             'platformName' => 'display name',
+            'platformThemeTitle' => 'theme title',
             'platformStatus' => 'status',
             'platformIsActive' => 'active status',
+            'platformImageUpload' => 'background image',
         ];
 
         $validated = $this->validate($rules, [], $validationAttributes);
 
+        // Find existing image path if editing
+        $imagePath = $this->editingPlatformId ? YearbookPlatform::find($this->editingPlatformId)?->background_image_path : null;
+
+        // Handle file upload
+        if ($this->platformImageUpload) {
+             // Delete old image if editing and new one is uploaded and old one exists
+             if ($this->editingPlatformId && $imagePath && Storage::disk('public')->exists($imagePath)) {
+                 Storage::disk('public')->delete($imagePath);
+                 Log::info("Deleted old background image: " . $imagePath);
+             }
+             // Store new image
+             $filename = $this->platformImageUpload->hashName();
+             $imagePath = $this->platformImageUpload->store('platform_backgrounds', 'public'); // Store in specific folder
+             Log::info("Stored new background image: " . $imagePath);
+         }
+         // If not uploading a new image while editing, $imagePath retains the existing path (or null if none existed).
+
         try {
             YearbookPlatform::updateOrCreate(
-                ['id' => $this->editingPlatformId], // Conditions for finding existing record
-                [                                  // Data to update or create with
+                ['id' => $this->editingPlatformId], // Conditions
+                [                                  // Data
                     'year' => $validated['platformYear'],
                     'name' => $validated['platformName'],
+                    'theme_title' => $validated['platformThemeTitle'],
+                    'background_image_path' => $imagePath, // Save path (new or existing)
                     'status' => $validated['platformStatus'],
-                    'is_active' => $validated['platformIsActive'], // Boot method handles deactivating others
+                    'is_active' => $validated['platformIsActive'],
                 ]
             );
 
             session()->flash('message', 'Yearbook Platform ' . ($this->editingPlatformId ? 'updated' : 'added') . ' successfully.');
             $this->closePlatformModal();
-            $this->resetPage(); // Reset pagination if needed
+            $this->resetPage();
 
         } catch (\Exception $e) {
             Log::error("Error saving Yearbook Platform: " . $e->getMessage());
             session()->flash('error', 'Could not save platform. Please check the data and try again.');
-            // Optionally add specific error back to form field if possible
-            // $this->addError('platformYear', 'An error occurred saving the platform.');
         }
     }
 
@@ -114,22 +144,21 @@ class ManageYearbookPlatforms extends Component
      */
     public function deletePlatform(YearbookPlatform $platform)
     {
-        // --- Safety Checks (adjust as needed) ---
+        // Safety Checks
         if ($platform->is_active) {
-             session()->flash('error', 'Cannot delete the currently active platform. Please activate another platform first.');
+             session()->flash('error', 'Cannot delete the currently active platform.');
              return;
         }
-        // Check if profiles are linked (adjust relationship name if needed)
          if ($platform->yearbookProfiles()->exists()) {
-             session()->flash('error', 'Cannot delete a platform with associated student profiles. Consider archiving instead.');
+             session()->flash('error', 'Cannot delete a platform with associated student profiles.');
              return;
          }
-         // --- End Safety Checks ---
 
         try {
+            // The 'deleting' boot method in the model handles image file deletion
             $platform->delete();
             session()->flash('message', 'Yearbook Platform deleted successfully.');
-            $this->resetPage(); // Reset pagination
+            $this->resetPage();
         } catch (\Exception $e) {
              Log::error("Error deleting Yearbook Platform ID {$platform->id}: " . $e->getMessage());
              session()->flash('error', 'Could not delete the platform.');
@@ -143,8 +172,7 @@ class ManageYearbookPlatforms extends Component
      {
          if (!$platform->is_active) {
             try {
-                // Setting is_active to true will trigger the boot method
-                // in the model to deactivate any other active platform.
+                // Boot method in model handles deactivating others
                 $platform->update(['is_active' => true]);
                 session()->flash('message', $platform->name . ' activated successfully.');
             } catch (\Exception $e) {
@@ -157,10 +185,8 @@ class ManageYearbookPlatforms extends Component
 
     public function render()
     {
-        // Fetch platforms, newest year first
         $platforms = YearbookPlatform::orderBy('year', 'desc')->paginate(10);
 
-        // Define options for the status dropdown in the modal
         $statusOptions = [
             'setup' => 'Setup (Not Visible/Usable)',
             'open' => 'Open (Accepting Submissions)',
@@ -169,16 +195,9 @@ class ManageYearbookPlatforms extends Component
             'archived' => 'Archived',
         ];
 
-        // --- Generate QR Code ---
-        $registrationUrl = route('register'); // Get URL for the student registration page
-        // Generate SVG QR code string. Size 150px, margin 1 unit.
-        $qrCodeSvg = QrCode::size(150)->margin(1)->generate($registrationUrl);
-        // --- End QR Code Generation ---
-
         return view('livewire.admin.manage-yearbook-platforms', [
             'platforms' => $platforms,
-            'statusOptions' => $statusOptions, // Pass options to the view
-            'qrCodeSvg' => $qrCodeSvg,
+            'statusOptions' => $statusOptions,
         ]);
     }
 }
