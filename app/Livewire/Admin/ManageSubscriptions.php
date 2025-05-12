@@ -21,7 +21,7 @@ class ManageSubscriptions extends Component
 
     protected $queryString = [
         'activeTab' => ['except' => 'pending', 'as' => 'tab'], // Allow tab switching via URL query string
-        'search' => ['except' => ''], // Allow searching via URL query string
+        'search' => ['except' => '','as' => 's'], // Allow searching via URL query string
     ];
 
     /**

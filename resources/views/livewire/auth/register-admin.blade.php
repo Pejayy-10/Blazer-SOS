@@ -6,7 +6,8 @@
 
         {{-- Logo --}}
         <div class="mb-10">
-             <img src="{{ asset('images/placeholder-logo.png') }}" alt="Blazer SOS Logo" class="h-8 sm:h-10 w-auto">
+            <img src="{{ asset('images/placeholder-logo.png') }}" alt="{{ config('app.name', 'Blazer SOS') }} Logo"
+            class="h-16 sm:h-20 w-auto inline-block"> {{-- Increased h-16/h-20 --}}
         </div>
 
         @if($isValidInvitation)

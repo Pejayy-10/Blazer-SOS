@@ -10,26 +10,28 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 
         {{-- Platform Status Card --}}
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4 border-l-4 {{ $platformStatus === 'open' ? 'border-green-500' : ($platformStatus === 'closed' || $platformStatus === 'setup' ? 'border-red-500' : 'border-blue-500') }}">
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4 border-l-4 {{ $platformStatus === 'open' ? 'border-green-500' : ($platformStatus === 'N/A' || $platformStatus === 'closed' ? 'border-red-500' : 'border-gray-500') }}">
             <div class="flex items-center">
                 <div class="flex-shrink-0 bg-indigo-500 dark:bg-indigo-600 rounded-md p-2">
+                     {{-- Icons based on $platformStatus string --}}
                     @if($platformStatus === 'open')
-                     <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                         <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     @else
-                    <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                        <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                     @endif
                 </div>
                 <div class="ml-4 flex-1">
                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Platform Status</p>
                     <p class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                        {{ ($platformStatus === 'N/A' && !$activePlatform) ? 'No Active Platform' : ucfirst($platformStatus) }}
+                        {{ $platformStatus !== 'N/A' ? ucfirst($platformStatus) : 'Not Active' }}
                     </p>
                 </div>
             </div>
+            {{-- Link for Platform Status Card --}}
             <div class="text-right mt-2">
                 <a href="{{ route('admin.platforms.index') }}" wire:navigate class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">Manage Platforms</a>
             </div>
-        </div>
+        </div> {{-- End Platform Status Card --}}
 
         {{-- Pending Payments Card --}}
          <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4 border-l-4 border-yellow-500">
@@ -45,7 +47,7 @@
              <div class="text-right mt-2">
                  <a href="{{ route('admin.subscriptions.index', ['tab' => 'pending']) }}" wire:navigate class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">View Pending</a>
              </div>
-        </div>
+        </div> {{-- End Pending Payments Card --}}
 
         {{-- Registered/Paid Card --}}
         <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4 border-l-4 border-green-500">
@@ -61,7 +63,7 @@
              <div class="text-right mt-2">
                  <a href="{{ route('admin.subscriptions.index', ['tab' => 'registered']) }}" wire:navigate class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">View Registered</a>
              </div>
-        </div>
+        </div> {{-- End Registered/Paid Card --}}
 
          {{-- Total Profiles Card --}}
          <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4 border-l-4 border-blue-500">
@@ -77,7 +79,7 @@
               <div class="text-right mt-2">
                  <a href="{{ route('admin.repository.index') }}" wire:navigate class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">View Repository</a>
              </div>
-        </div>
+        </div> {{-- End Total Profiles Card --}}
 
     </div> {{-- End Stats Grid --}}
 
@@ -86,7 +88,7 @@
         @livewire('bulletin')
     </div>
 
-    {{-- Include the Upload Modal Component --}}
-    @livewire('admin.upload-platform-background')
+    {{-- Include the Upload Modal Component (Ensure this component exists or remove this line if not needed) --}}
+    {{-- @livewire('admin.upload-platform-background') --}}
 
 </div> {{-- End Single Root Element Wrapper --}}

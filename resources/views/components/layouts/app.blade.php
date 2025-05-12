@@ -171,22 +171,27 @@
                 @endauth {{-- End @auth check --}}
             </nav>
 
-            {{-- Sidebar Footer --}}
-             <div class="p-4 mt-auto border-t border-white/10">
-                 @auth {{-- Show only if logged in --}}
-                     <div class="text-xs text-white/60">
-                         {{-- Display actual user data --}}
-                         Role: <span class="font-medium text-white/80">{{ ucfirst(Auth::user()->role) }}</span>
-                         <span class="mx-1">|</span>
-                         User: <span class="font-medium text-white/80">{{ Auth::user()->username }}</span>
-                     </div>
-                 @else {{-- Show if logged out --}}
-                     <div class="text-xs text-white/60">
-                        Status: Not Logged In
-                     </div>
-                 @endauth
-             </div>
-        </aside>
+                     {{-- Sidebar Footer --}}
+         <div class="p-4 mt-auto border-t border-white/10">
+            @auth {{-- Show only if logged in --}}
+                <div class="text-xs text-white/60">
+                    {{-- Check for admin role and if role_name exists --}}
+                    @php
+                        $displayRole = (Auth::user()->role === 'admin' && !empty(Auth::user()->role_name))
+                                       ? Auth::user()->role_name // Show assigned role name for admins
+                                       : ucfirst(Auth::user()->role); // Show system role otherwise
+                    @endphp
+                    Role: <span class="font-medium text-white/80">{{ $displayRole }}</span>
+                    <span class="mx-1">|</span>
+                    User: <span class="font-medium text-white/80">{{ Auth::user()->username }}</span>
+                </div>
+            @else {{-- Show if logged out --}}
+                <div class="text-xs text-white/60">
+                   Status: Not Logged In
+                </div>
+            @endauth
+        </div>
+                </aside>
         <!-- ========== END MAIN SIDEBAR ========== -->
 
         <!-- ========== CONTENT WRAPPER ========== -->

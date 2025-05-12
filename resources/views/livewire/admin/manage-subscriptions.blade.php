@@ -19,7 +19,7 @@
     <div class="mb-4 md:flex md:items-center md:justify-between">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2 md:mb-0">Manage Subscriptions</h2>
         <div>
-            <input type="text" wire:model.debounce.300ms="search" placeholder="Search Name, Username, Email, Platform..."
+            <input type="text" wire:model.lazy="search" placeholder="Search Name, Username, Email, Course..." 
                    class="w-full md:w-64 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 sm:text-sm">
         </div>
     </div>

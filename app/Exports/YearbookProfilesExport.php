@@ -27,14 +27,13 @@ class YearbookProfilesExport implements FromQuery, WithHeadings, WithMapping, Sh
     /** @return array<int, string> */
     public function headings(): array
     {
-        // Find 'Subscription Type' and change it
         return [
             'User ID', 'Username', 'First Name', 'Last Name', 'Email',
             'Platform Year', 'Platform Name', 'Nickname', 'College', 'Course',
             'Major', 'Year & Section', 'Age', 'Birth Date', 'Address',
             'Contact Number', 'Mother Name', 'Father Name', 'Affiliation 1',
             'Affiliation 2', 'Affiliation 3', 'Awards', 'Mantra',
-            'Package Type', // <-- Changed Heading
+            'Package Type', 
             'Jacket Size', 'Payment Status', 'Profile Submitted At', 'Payment Confirmed At',
         ];
     }
@@ -47,7 +46,6 @@ class YearbookProfilesExport implements FromQuery, WithHeadings, WithMapping, Sh
     {
          /** @var \App\Models\YearbookProfile $profile */
 
-         // Map internal value to user-friendly label
          $packageTypeLabel = match ($profile->subscription_type) {
              'full_package' => 'Full Package',
              'inclusions_only' => 'Inclusions Only',
@@ -64,7 +62,7 @@ class YearbookProfilesExport implements FromQuery, WithHeadings, WithMapping, Sh
             $profile->contact_number, $profile->mother_name, $profile->father_name,
             $profile->affiliation_1, $profile->affiliation_2, $profile->affiliation_3,
             $profile->awards, $profile->mantra,
-            $packageTypeLabel, // <-- Use the label
+            $packageTypeLabel, 
             $profile->jacket_size, ucfirst($profile->payment_status ?? 'N/A'),
             $profile->submitted_at ? $profile->submitted_at->format('Y-m-d H:i:s') : null,
             $profile->paid_at ? $profile->paid_at->format('Y-m-d H:i:s') : null,
