@@ -100,7 +100,7 @@
                          </tbody>
                      </table>
                   </div>
-                 @if ($users->hasPages()) <div class="p-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">{{ $users->links('livewire.pagination-links') }}</div> @endif
+                 @if ($users->hasPages()) <div class="p-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">{{ $users->links() }}</div> @endif
             </div>
         </div>
 
@@ -151,7 +151,7 @@
                          </tbody>
                      </table>
                   </div>
-                  @if ($staff->hasPages()) <div class="p-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">{{ $staff->links('livewire.pagination-links') }}</div> @endif
+                  @if ($staff->hasPages()) <div class="p-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">{{ $staff->links() }}</div> @endif
               </div>
             </div>
 
@@ -213,7 +213,7 @@
                </div>
                @if ($invitations->hasPages())
                    <div class="p-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
-                       {{ $invitations->links('livewire.pagination-links') }}
+                       {{ $invitations->links() }}
                    </div>
                @endif
            </div> {{-- End Added Container Div --}}

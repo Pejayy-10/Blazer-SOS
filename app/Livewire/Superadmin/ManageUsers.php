@@ -24,7 +24,10 @@ use Illuminate\Validation\Rule; // <-- Import Laravel's Rule facade
 class ManageUsers extends Component
 {
     use WithPagination;
-
+    
+    // Set the pagination theme to match the custom view we created
+    protected $paginationTheme = 'tailwind';
+    
     // Tabs
     public string $activeTab = 'users'; // Default tab
 

@@ -70,7 +70,7 @@
                                 class="h-4 w-4 rounded border-gray-300 text-[#D4B79F] focus:ring-[#D4B79F] bg-[#5F0104]/80 border-white/20">
                             <label for="remember_me" class="ml-2 block text-sm text-white opacity-90">Remember me</label>
                         </div>
-                        <a href="#" class="text-sm text-[#D4B79F] hover:text-[#E5C8B0] transition-colors duration-200">Forgot password?</a>
+                        <a href="{{ route('password.request') }}" wire:navigate class="text-sm text-[#D4B79F] hover:text-[#E5C8B0] transition-colors duration-200">Forgot password?</a>
                     </div>
 
                     {{-- Login Button --}}

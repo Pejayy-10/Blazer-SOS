@@ -14,6 +14,8 @@ use Livewire\WithPagination;
 class ManageRoleNames extends Component
 {
     use WithPagination;
+    
+    protected $paginationTheme = 'tailwind';
 
     #[Rule('required|string|max:100|unique:role_names,name')]
     public string $newRoleName = '';

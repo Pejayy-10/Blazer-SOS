@@ -17,6 +17,9 @@ class Register extends Component
 {
     #[Rule('required|string|max:255')]
     public string $firstName = '';
+    
+    #[Rule('nullable|string|max:100')]
+    public string $middleName = '';
 
     #[Rule('required|string|max:255')]
     public string $lastName = '';
@@ -43,6 +46,7 @@ class Register extends Component
         // Create the user in the database
         $user = User::create([
             'first_name' => $validated['firstName'], // Map form field to DB column
+            'middle_name' => $validated['middleName'] ?? null, // Optional middle name
             'last_name' => $validated['lastName'],   // Map form field to DB column
             'username' => $validated['username'],
             'email' => $validated['email'],

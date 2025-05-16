@@ -39,6 +39,23 @@
                         </div>
                         @error('firstName') <span class="text-red-300 text-xs mt-1 block">{{ $message }}</span> @enderror
                     </div>
+                    
+                    {{-- Middle Name Input (Optional) --}}
+                    <div class="space-y-1.5">
+                        <label for="middle_name" class="block text-sm font-medium opacity-90">Middle Name <span class="text-xs opacity-70">(Optional)</span></label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <input
+                                type="text" id="middle_name" wire:model.lazy="middleName"
+                                class="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[#5F0104]/80 border @error('middleName') border-red-500 @else border-white/10 @enderror focus:outline-none focus:ring-2 focus:ring-white/60 placeholder-white/50 text-white transition-all duration-200"
+                                placeholder="Enter your middle name or initial" autocomplete="additional-name">
+                        </div>
+                        @error('middleName') <span class="text-red-300 text-xs mt-1 block">{{ $message }}</span> @enderror
+                    </div>
 
                     {{-- Last Name Input --}}
                     <div class="space-y-1.5">

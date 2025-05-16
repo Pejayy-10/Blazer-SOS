@@ -94,7 +94,7 @@
                      {{-- Pagination --}}
                      @if ($courses->hasPages())
                         <div class="mt-4 border-t border-gray-200 dark:border-gray-700 pt-2">
-                            {{ $courses->links('livewire.pagination-links') }}
+                            {{ $courses->links() }}
                         </div>
                     @endif
                 @else
@@ -134,7 +134,7 @@
                     {{-- Pagination --}}
                      @if ($majors->hasPages())
                         <div class="mt-4 border-t border-gray-200 dark:border-gray-700 pt-2">
-                            {{ $majors->links('livewire.pagination-links') }}
+                            {{ $majors->links() }}
                         </div>
                     @endif
                  @else

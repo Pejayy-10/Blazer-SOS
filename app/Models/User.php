@@ -65,6 +65,14 @@ class User extends Authenticatable // Optional: implements MustVerifyEmail
     {
         return $this->hasOne(YearbookProfile::class);
     }
+    
+    /**
+     * Get all yearbook subscriptions for this user.
+     */
+    public function yearbookSubscriptions(): HasMany
+    {
+        return $this->hasMany(YearbookSubscription::class);
+    }
 
     /**
      * Get the yearbook photos uploaded by the user.

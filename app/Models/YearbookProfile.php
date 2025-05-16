@@ -15,6 +15,7 @@ class YearbookProfile extends Model
     protected $fillable = [
         'user_id',
         'nickname',
+        'middle_name', // Added field
         'college_id', // Added ID
         'course_id',  // Added ID
         'major_id',   // Added ID (Ensure this was added via migration)
@@ -22,7 +23,11 @@ class YearbookProfile extends Model
         'year_and_section',
         'age',
         'birth_date',
-        'address',
+        'street_address',    // <-- Add
+        'city',              // <-- Add
+        'province_state',    // <-- Add
+        'zip_code',          // <-- Add
+        'country',           // <-- Add
         'contact_number',
         'mother_name',
         'father_name',

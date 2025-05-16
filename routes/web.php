@@ -39,7 +39,11 @@ Route::middleware('guest')->group(function () { // <<< START Guest group
     Route::get('/register/admin/{token}', RegisterAdmin::class)
         ->name('admin.register.form');
 
-    // Add password reset/email verification routes here if needed later
+    // Password Reset Routes
+    Route::get('/forgot-password', \App\Livewire\Auth\ForgotPassword::class)->name('password.request');
+    Route::get('/reset-password/{token}', function($token) {
+        return view('livewire.auth.reset-password', ['token' => $token]);
+    })->name('password.reset');
 
 }); // <<< END Guest group
 
@@ -98,6 +102,9 @@ Route::middleware('auth')->group(function () {
 
 });
 
+
+// Include the auth routes from auth.php
+require __DIR__.'/auth.php';
 
 // --- Root URL Redirect Logic ---
 Route::get('/', function () {

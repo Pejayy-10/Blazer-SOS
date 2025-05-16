@@ -14,6 +14,8 @@ use Livewire\WithPagination; // Use pagination trait
 class ManageSubscriptions extends Component
 {
     use WithPagination; // Enable pagination
+    
+    protected $paginationTheme = 'tailwind';
 
     public string $activeTab = 'pending'; // Default tab ('pending', 'registered', 'no_writeup', 'deleted')
     public int $perPage = 10; // Results per page

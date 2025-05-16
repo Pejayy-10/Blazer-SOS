@@ -17,6 +17,8 @@ use Illuminate\Support\Collection as BaseCollection; // For type hinting empty c
 class ManageAcademicStructure extends Component
 {
     use WithPagination;
+    
+    protected $paginationTheme = 'tailwind';
 
     // --- State for Display ---
     public ?int $selectedCollegeId = null; // STORE THE ID HERE
@@ -37,13 +39,13 @@ class ManageAcademicStructure extends Component
     // --- College Form Fields ---
     #[Rule('required|string|max:255')]
     public string $collegeName = '';
-    #[Rule('nullable|string|max:50')]
+    #[Rule('required|string|max:50')]
     public string $collegeAbbreviation = '';
 
     // --- Course Form Fields ---
     #[Rule('required|string|max:255')]
     public string $courseName = '';
-    #[Rule('nullable|string|max:50')]
+    #[Rule('required|string|max:50')]
     public string $courseAbbreviation = '';
     // college_id will be taken from $selectedCollegeId
 
@@ -154,7 +156,7 @@ class ManageAcademicStructure extends Component
         if (!$this->selectedCollegeId) return;
         $rules = [
             'courseName' => ['required', 'string', 'max:255'],
-            'courseAbbreviation' => ['nullable', 'string', 'max:50'],
+            'courseAbbreviation' => ['required', 'string', 'max:50'],
         ];
         // Unique validation within the selected college
         $uniqueRule = $this->editingCourseId

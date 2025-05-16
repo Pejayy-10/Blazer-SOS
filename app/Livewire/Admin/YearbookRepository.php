@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Log;
 class YearbookRepository extends Component
 {
     use WithPagination;
+    
+    protected $paginationTheme = 'tailwind';
 
     // --- Filters - ADD RULES HERE ---
     #[Rule('nullable|integer|exists:colleges,id')] // Allow empty or valid college ID
@@ -176,7 +178,7 @@ class YearbookRepository extends Component
 
 
     /**
-     * Export the filtered data.
+     * Export the filtered data with enhanced styling and platform-specific naming.
      */
     public function exportData()
     {
@@ -184,34 +186,60 @@ class YearbookRepository extends Component
         $this->validateOnly('exportFormat');
 
         $query = $this->buildFilteredQuery(); // Get the query with filters applied
-        $filename = 'yearbook_data_' . now()->format('Ymd_His'); // Generate filename
+        
+        // Generate better filename with platform info if filter is set
+        $platformInfo = "";
+        if (!empty($this->filterPlatformId)) {
+            $platform = YearbookPlatform::find($this->filterPlatformId);
+            if ($platform) {
+                $platformInfo = "-{$platform->year}-{$platform->name}";
+                // Clean up filename by removing spaces or special characters
+                $platformInfo = preg_replace('/[^a-zA-Z0-9-]/', '_', $platformInfo);
+            }
+        }
+        
+        $date = now()->format('Ymd_His');
+        $baseFilename = "yearbook_profiles{$platformInfo}_{$date}";
         $export = new YearbookProfilesExport($query); // Create an instance of the Export class
 
         try {
             if ($this->exportFormat === 'xlsx') {
-                $filename .= '.xlsx';
+                $filename = $baseFilename . '.xlsx';
                 return Excel::download($export, $filename, \Maatwebsite\Excel\Excel::XLSX);
             } elseif ($this->exportFormat === 'csv') {
-                $filename .= '.csv';
+                $filename = $baseFilename . '.csv';
                 return Excel::download($export, $filename, \Maatwebsite\Excel\Excel::CSV, ['Content-Type' => 'text/csv']);
             } elseif ($this->exportFormat === 'json') {
-                // Fetch all filtered data for JSON export (no pagination)
-                $data = $query->get()->toArray();
-                $filename .= '.json';
+                // For JSON export, include some metadata about the export
+                $data = [
+                    'metadata' => [
+                        'generated_at' => now()->toIso8601String(),
+                        'filters' => [
+                            'platform' => !empty($this->filterPlatformId) ? YearbookPlatform::find($this->filterPlatformId)?->name : 'All',
+                            'college' => !empty($this->filterCollegeId) ? College::find($this->filterCollegeId)?->name : 'All',
+                            'course' => !empty($this->filterCourseId) ? Course::find($this->filterCourseId)?->name : 'All',
+                            'payment_status' => $this->filterPaymentStatus ?: 'All',
+                        ],
+                        'record_count' => $query->count(),
+                    ],
+                    'data' => $query->get()->toArray(),
+                ];
+                
+                $filename = $baseFilename . '.json';
                 return response()->streamDownload(function () use ($data) {
-                    echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); // Pretty print, don't escape slashes
+                    echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
                 }, $filename, ['Content-Type' => 'application/json']);
             }
 
         } catch (\Exception $e) {
             Log::error("Export Error: " . $e->getMessage());
-            session()->flash('error', 'An error occurred during export: ' . $e->getMessage()); // Show specific error if possible
-            return null; // Prevent further action in Livewire context
+            session()->flash('error', 'An error occurred during export: ' . $e->getMessage());
+            return null;
         }
 
-         // Should not be reached if validation passes
-         session()->flash('error', 'Invalid export format selected.');
-         return null;
+        // Should not be reached if validation passes
+        session()->flash('error', 'Invalid export format selected.');
+        return null;
     }
 
 
